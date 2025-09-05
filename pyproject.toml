@@ -32,9 +32,9 @@ classifiers = [
 dependencies = [
   "Flask ~= 2.2",
   "biocommons.seqrepo ~= 0.6",
+  "bioutils",
   "coloredlogs",
-  "connexion[swagger-ui] ~= 2.2",
-  "setuptools" # pin until yoyo-migrations is updated
+  "connexion[swagger-ui] ~= 2.2"
 ]
 description = "SeqRepo REST Service"
 dynamic = ["version"]
