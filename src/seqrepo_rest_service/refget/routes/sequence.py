@@ -13,6 +13,7 @@ range_re = re.compile(r"^bytes=(\d+)-(\d+)$")
 
 
 class HTTPError(Exception):
+    """Custom Error"""
     def __init__(self, status_code, message):
         self.status_code = status_code
         self.message = message
@@ -20,6 +21,19 @@ class HTTPError(Exception):
 
 
 def _validate_range_header(range_header, start: int | None = None, end: int | None = None):
+    """
+    Validate the range header against parameters
+
+    Raises an HTTPError if:
+    - A range header is provided along with `start` or `end` query parameters.
+    - The range header format is invalid.
+    - The parsed start is greater than the end.
+
+    :param range_header: string representing the range
+    :param start: optional start coordinate
+    :param end: optional end coordinate
+    :raises HTTPError: on invalid header or conflicting parameters
+    """
     if range_header:
         _logger.debug("Received header `Range: %s`", range_header)
         if start is not None or end is not None:
@@ -42,6 +56,22 @@ def _validate_start_and_end(
     start: int | None = None,
     end: int | None = None,
 ):
+    """
+    Validate start and end query parameters against the sequence length
+
+    Raises an HTTPError if:
+    - `start` is greater than or equal to the sequence length.
+    - `end` is greater than the sequence length and no range header is present.
+    - `start` is greater than `end`.
+    - Coordinates do not fall within valid bounds.
+
+    :param sr: SeqRepo instance
+    :param seq_id: sequence identifier
+    :param range_header: string representing the range
+    :param start: optional start coordinate
+    :param end: optional end coordinate
+    :raises HTTPError: on invalid coordinate logic
+    """
     seqinfo = sr.sequences.fetch_seqinfo(seq_id)
 
     if start is not None and end is not None:
@@ -59,6 +89,14 @@ def _validate_start_and_end(
 
 
 def get(query: str, start=None, end=None):
+    """
+    Retrieve a sequence or a subsequence
+
+    :param query: string identifying the sequence
+    :param start: optional start coordinate
+    :param end: optional end coordinate
+    return: tuple of (sequence bytes or NoContent, HTTP status code)
+    """
     accept_header = request.headers.get("Accept", None)
     if accept_header and accept_header not in valid_content_types:
         return problem(406, "Invalid Accept header")
