@@ -1,7 +1,6 @@
 import logging
-import re
 
-from connexion import NoContent, request
+from connexion import NoContent
 
 from ...threadglobals import get_seqrepo
 from ...utils import get_sequence_ids, problem
