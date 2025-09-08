@@ -77,7 +77,7 @@ def _validate_start_and_end(
 
     if start is not None and end is not None:
         if start >= seqinfo["len"]:
-            raise HTTPError(6, "Invalid coordinates: start > sequence length")
+            raise HTTPError(416, "Invalid coordinates: start > sequence length")
         if end > seqinfo["len"] and not range_header:
             # NB Compliance tests imply that end may be > len if in range header
             raise HTTPError(416, "Invalid coordinates: end > sequence length")
